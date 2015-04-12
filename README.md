@@ -78,6 +78,33 @@ CASE
 END;
 ```
 
+### Export to a Simple Table
+
+I wanted to make my upload to CartoDB dead simple, so I decided to export my data to a CSV with a geometry field that CartoDB would know how to handle. I also limited my export to Minnesota so I wouldn't max out my free, student trial CartoDB storage space.
+
+**Create View `mnwi_export`:**
+
+```sql
+CREATE VIEW mn_export AS
+SELECT 
+  sampling_event_identifier AS sampling_id,
+  date_part('month', observation_date) AS month,
+  complete,
+  observer_id,
+  geom_wm AS the_geom
+FROM ebdus13
+WHERE state = 'Minnesota' or state = 'Wisconsin';
+```
+
+**Export View to CSV:**
+
+```sql
+COPY (SELECT * FROM mnwi_export)
+TO 'C:\Workspace\mnwi_export.csv'
+WITH DELIMITER ','
+CSV HEADER;
+```
+
 ## Making the Map in CartoDB
 
 text...
