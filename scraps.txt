@@ -1,0 +1,73 @@
+    <script type="infowindow/html" id="infowindow_template">
+
+        <div class="cartodb-popup">
+            <a href="#close" class="cartodb-popup-close-button close">x</a>
+            <div class="cartodb-popup-content-wrapper">
+
+                <div class="cartodb-popup-header">
+                    <img src="http://placehold.it/100x30"></src>
+                </div>
+
+                <div class="cartodb-popup-content">
+                    
+                    <h4>County</h4>
+                    <p>{{content.data.name}}, {{content.data.state}}</p>
+                    <h4>Total 2013 Observations</h4>
+                    <p>{{content.data.yr_obstotal}}</p>
+                    <div id="myChart" width="200" height="200">
+                        <script>
+                            var obsdata = {
+                                labels: ["January", "February", "March", "April", "May", "June", "July"],
+                                datasets: [
+                                {   label: "My First dataset",
+                                    fillColor: "rgba(220,220,220,0.5)",
+                                    strokeColor: "rgba(220,220,220,0.8)",
+                                    highlightFill: "rgba(220,220,220,0.75)",
+                                    highlightStroke: "rgba(220,220,220,1)",
+                                    data: [65, 59, 80, 81, 56, 55, 40]
+                                }]};
+                            var ctx = document.getElementById("myChart").getContext("2d");
+                            var myNewChart = new Chart(ctx).Bar(obsdata);
+                        </script>
+                    </div>
+
+                </div>
+            </div>
+            <div class="cartodb-popup-tip-container"></div>
+        </div>
+    </script>
+
+
+    subLayer.infowindow.set('template', $('#infowindow_template').html());
+
+#month-filter {
+    position: absolute;
+    bottom: 25px;
+    left: 125px;
+    background-color: #fff;
+    border: 1px solid #999;
+    border-radius: 4px;
+    padding-left:5px;
+}
+
+#month-filter ul {
+  padding:0;
+  margin:0;
+}
+
+#month-filter li {
+    padding: 10px;
+    margin-left:-5px;
+    display:inline-block;
+    border-right: 1px solid #999;
+}
+
+#month-filter li:hover {
+    background-color: #999;
+    cursor:pointer;
+}
+
+#month-filter li.selected {
+    background-color: #000;
+    color:#FFF;
+}

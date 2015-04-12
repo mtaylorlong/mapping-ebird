@@ -1,1 +1,90 @@
-Hello world
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head Section -->
+<head>
+    <meta charset="utf-8">
+
+    <!--Edit the title of the page-->
+    <title>eBird Explorer</title>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.11/themes/css/cartodb.css" />
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<!-- Body Section -->
+<body>
+
+    <!-- Header -->
+    <div id="header">
+        <div id="title"><h1>eBird Underbirded Counties, 2013</h1></div>
+        <div id="nav">
+            <ul>
+                <li>How it Works</li>
+                <li>Why Explore</li>
+                <li>About eBird</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Map -->
+    <div id="map"></div>
+
+    <!-- Legend -->
+    <div class='cartodb-legend choropleth'> 
+        <div class="legend-title">eBird Data Coverage</div>
+        <ul>
+            <li class="min">Poor</li>
+            <li class="min">Moderate</li>
+            <li class="min">Good</li>
+            <li class="graph count_189">
+                <div class="colors">
+                    <div class="quartile" style="background-color:rgba(153,0,0,0.8)"></div>
+                    <div class="quartile" style="background-color:rgba(204,183,0,0.8)"></div>
+                    <div class="quartile" style="background-color:rgba(0,153,0,0.25)"></div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    
+
+    <!-- Interactive Legend / Class Filter -->
+    <!-- <div id="layer-filter">
+        <ul>
+            <li data="all" class="selected">All</li>
+            <li data="0.00001">Poor</li>
+            <li data="0.00005">Moderate</li>
+            <li data="10">Good</li>
+        </ul>
+    </div> -->
+
+    <!-- Month Filter -->
+    <div id="month-filter">
+        <ul>
+            <li data="yr" class="selected">2013</li>
+            <li data="jan">Jan</li>
+            <li data="feb">Feb</li>
+            <li data="mar">Mar</li>
+            <li data="apr">Apr</li>
+            <li data="may">May</li>
+            <li data="jun">Jun</li>
+            <li data="jul">Jul</li>
+            <li data="aug">Aug</li>
+            <li data="sep">Sep</li>
+            <li data="oct">Oct</li>
+            <li data="nov">Nov</li>
+            <li data="dec">Dec</li>
+        </ul>
+    </div>
+
+    <!-- JavaScript Section-->
+    <script type="text/javascript" src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+    <script type="text/javascript" src="http://maps.stamen.com/js/tile.stamen.js?v1.3.0"></script>
+    <script type="text/javascript" src="http://libs.cartocdn.com/cartodb.js/v3/3.11/cartodb.js"></script>
+    <script type="text/javascript" src="Chart.js-master/Chart.js"></script>
+    <script type="text/javascript" src="javascript.js"></script>
+</body>
+</html>
