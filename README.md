@@ -3,11 +3,11 @@
 This work represents my explorations in mapping eBird data coverage to reveal patterns of standardization and user diversity over space and time.
 
 ## Outline
-1. [Introduction](#Introduction)
-2. [Getting eBird Data](#Getting-eBird-Data)
-3. [Processing in PostGIS](#Processing-in-PostGIS)
-4. [Making the Map CartoDB](#Making-the-Map-CartoDB)
-5. [Final Reflections](#Final-Reflections)
+1. [Introduction](#introduction)
+2. [Getting eBird Data](#getting-ebird-data)
+3. [Processing in PostGIS](#processing-in-postgis)
+4. [Making the Map in CartoDB](#making-the-map-in-cartodb)
+5. [Final Reflections](#final-reflections)
 
 ## Introduction
 
@@ -23,7 +23,7 @@ text...
 
 text...
 
-## Making the Map CartoDB
+## Making the Map in CartoDB
 
 text...
 
