@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Client side hexgrid | CartoDB.js</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+    <style>
+      html, body, #map {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
+    <!--[if lte IE 8]>
+        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.ie.css" />
+    <![endif]-->
+
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <!-- include cartodb.js library -->
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
+    <script>
+      // use your initial zoom size to set a base grid size
+      // it doesn't need to change on zoom or anything...
+      var zoom = 5; // init zoom
+
+      function createBinStyle(tablename, multiplier, ramp){
+        // setup SQL client
+        var sql = cartodb.SQL({ user: 'longx598' });
+        // get the extents of a new grid
+        sql.execute("WITH hgrid AS (SELECT CDB_HexagonGrid(ST_Expand(!bbox!, greatest(CDB_XYZ_Resolution("+zoom+")) * "+multiplier+"), CDB_XYZ_Resolution("+zoom+") * "+multiplier+") as cell), aggs AS (SELECT count(i.cartodb_id)/power( "+multiplier+" * CDB_XYZ_Resolution("+zoom+"), 2 ) as points_density FROM hgrid, (select * from "+tablename+") i where ST_Intersects(i.the_geom_webmercator, hgrid.cell) GROUP BY hgrid.cell) SELECT min(points_density) mn, max(points_density) mx FROM aggs")
+          .done(function(data){
+            // calculate the new steps for CartoCSS
+            var step = (data.rows[0].mx - data.rows[0].mn) / ramp.length;
+            if (step==0) step = 1;
+            var newstyle = "#"+tablename+"{polygon-opacity: 0.8; line-color: #FFF; line-width: 1; line-opacity: 1; ";
+            for(var i = data.rows[0].mx; i>data.rows[0].mn; i=i-step){
+              var fill = ramp.pop();
+              newstyle += "[points_density <= "+i+"] {polygon-fill: "+fill+";} ";
+            }
+            newstyle+= "}";
+            // Set new style
+            sublayer.setCartoCSS(newstyle)
+          })
+
+      }
+      function main() {
+
+        // create leaflet map
+        var map = L.map('map', { 
+          zoomControl: false,
+          center: [44.98, -93.26],
+          zoom: zoom
+        })
+
+        // add a base layer
+        L.tileLayer('http://tile.stamen.com/toner/{z}/{x}/{y}.png', {
+          attribution: 'Stamen'
+        }).addTo(map);
+
+        // add cartodb layer with one sublayer
+        var sublayer;
+
+        // !pxel_width! and !pixel_height! are provided by the tiler
+        cartodb.createLayer(map, {
+          user_name: 'longx598',
+          type: 'cartodb',
+          sublayers: [{
+             sql: 'WITH hgrid AS (SELECT CDB_HexagonGrid(ST_Expand(!bbox!, greatest(!pixel_width!,!pixel_height!) * 15), greatest(!pixel_width!,!pixel_height!) * 15) as cell) SELECT hgrid.cell as the_geom_webmercator, count(i.cartodb_id) as points_count, count(i.cartodb_id)/power( 15 * CDB_XYZ_Resolution('+zoom+'), 2 ) as points_density, 1 as cartodb_id FROM hgrid, (select * from mnwi) i where ST_Intersects(i.the_geom_webmercator, hgrid.cell) GROUP BY hgrid.cell',
+             cartocss: '#mnwi{ polygon-fill: #BD0026; polygon-opacity: 0.8; line-color: #FFF; line-width: 1; line-opacity: 1; } #mnwi{ [points_density <= 2.03359309142757e-7] { polygon-fill: #BD0026; } [points_density <= 7.54008032072687e-8] { polygon-fill: #F03B20; } [points_density <= 5.49720141609644e-8] { polygon-fill: #FD8D3C; } [points_density <= 3.95575642442075e-8] { polygon-fill: #FECC5C; } [points_density <= 2.21002354228201e-8] { polygon-fill: #FFFFB2; } }',
+             interactivity: 'cartodb_id, points_count',
+             infowindow: true
+          }]
+        })
+        .addTo(map)
+        .done(function(layer) {
+
+          sublayer = layer.getSubLayer(0);
+          sublayer.setInteraction(true);
+
+
+          // var infobox = new cdb.geo.ui.InfoBox({
+          //   width: 300,
+          //   layer: layer,
+          //   template: '<p>points: {{points_count}}</p>'
+          // });
+
+          // $("body").append(infobox.render().el);
+
+          setTimeout(function(){
+	        // table we are visualizing
+	        var tablename = "mnwi";
+	        // the smaller the smaller the grid
+	        var multiplier = 10; //note: originally it was 15
+	        // our color ramp
+	        var ramp = ['#BD0026','#F03B20','#FD8D3C','#FECC5C','#FFFFB2'];
+
+	        // custom function
+	        createBinStyle(tablename, multiplier, ramp)
+
+            // Set new SQL (see "* 5" instead of "* 15" in original)
+          sublayer.setSQL("WITH hgrid AS (SELECT CDB_HexagonGrid(ST_Expand(!bbox!, greatest(!pixel_width!,!pixel_height!) * "+multiplier+"), greatest(!pixel_width!,!pixel_height!) * "+multiplier+") as cell) SELECT hgrid.cell as the_geom_webmercator, count(i.cartodb_id) as points_count, count(i.cartodb_id)/power( "+multiplier+" * CDB_XYZ_Resolution("+zoom+"), 2 ) as points_density, 1 as cartodb_id FROM hgrid, (select * from mnwi) i where ST_Intersects(i.the_geom_webmercator, hgrid.cell) GROUP BY hgrid.cell");
+          },2000)
+        });
+
+
+      }
+
+      // you could use $(window).load(main);
+      window.onload = main; 
+
+    </script>
+
+  </body>
+</html>
